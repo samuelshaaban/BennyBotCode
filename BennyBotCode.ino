@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "filesystem.h"
 #include "config.h"
-#include "controller.h"
+#include "controllerinterface.h"
 #include "motors.h"
 #include "servos.h"
 #include "gpio.h"
@@ -11,7 +11,12 @@
 Filesystem fs; // probably only used through references stored at setup of media
 Config config;
 
-Controller controller(XBOX_ONE);
+// I don't know why, but the controller code only works if you select
+// ESP32-S3-USB-OTG - esp32_bluepad32
+// as your board.
+// Also need to go to 'Preferences > Additional Board Manager URLS' and paste in:
+// https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json
+ControllerInterface controller(XBOX_ONE);
 Motors motors;
 Servos servos;
 

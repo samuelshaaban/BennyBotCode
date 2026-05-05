@@ -1,6 +1,6 @@
 #pragma once
 #include "config.h"
-#include "controller.h" // Keys
+#include "controllerinterface.h" // Keys
 
 class Servos {
   public:
