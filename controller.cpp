@@ -5,3 +5,7 @@ Controller::Controller(ControllerType type) {
     // setup xbox one
   }
 }
+
+void Controller::setup() {}
+Keys Controller::read() {}
+void Controller::set_battery(double volts) {}

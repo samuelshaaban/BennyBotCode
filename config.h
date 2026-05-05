@@ -7,6 +7,7 @@ enum Bot {A, B};
 // modifiable configuration read from file
 class Config {
   public:
+  Config();
   void read(Filesystem&);
 
   Bot get_bot();

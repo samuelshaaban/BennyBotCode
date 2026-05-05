@@ -1,5 +1,6 @@
 #pragma once
 #include "config.h"
+#include "controller.h" // Keys
 
 class Media {
   public:
