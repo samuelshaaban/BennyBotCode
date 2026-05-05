@@ -1,4 +1,5 @@
 #pragma once
+#include <Bluepad32.h>
 
 enum ControllerType {
   XBOX_ONE
@@ -26,9 +27,9 @@ struct Keys {
 // then each controllable module reads config to map aux analog and cmds to specific behavior
 
 
-class Controller {
+class ControllerInterface {
   public:
-  Controller(ControllerType);
+  ControllerInterface(ControllerType);
   void setup();
   void set_battery(double);
 
