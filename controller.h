@@ -4,9 +4,24 @@ enum ControllerType {
   XBOX_ONE
 };
 
+/*
+need way to control:
+drive motors: 2 axis
+auxiliary motors/actuators/servos: 1 axis
+soundboard / display -> probably enumerate configured files and send just a number to media
+volume level?
+perhaps change what is on the gauges / display?
+*/
 struct Keys {
-// has a variable for every key
-// might rather use the config to map the keys to their function before returning this
+  public:
+  double drive_x, drive_y;
+
+  // auxiliary motors, but these depend on configuration so not sure
+
+  unsigned int media_cmd; // probably enumerate configured files to play and just send a number to media, 0 = nothing
+  unsigned double volume; // only for A?
+
+  // maybe some other cmd to control gauges or something
 };
 
 
