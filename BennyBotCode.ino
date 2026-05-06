@@ -20,7 +20,7 @@ ControllerInterface controller(XBOX_ONE);
 Motors motors;
 Servos servos;
 
-GPIO gpio;
+Gpio gpio;
 Antitheft antitheft;
 Media media;
 //USB usb

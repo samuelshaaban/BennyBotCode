@@ -2,9 +2,9 @@
 #include "config.h"
 
 // holds key and battery monitor and gauges
-class GPIO {
+class Gpio {
   public:
-  GPIO();
+  Gpio();
   void setup(Config&);
   
   void write_gauge(int, double);

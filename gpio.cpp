@@ -1,7 +1,7 @@
 #include "gpio.h"
 
-GPIO::GPIO() {}
-void GPIO::setup(Config &config) {}
-void GPIO::write_gauge(int gauge, double val) {}
-bool GPIO::read_key_switch() {}
-double GPIO::read_battery() {}
+Gpio::Gpio() {}
+void Gpio::setup(Config &config) {}
+void Gpio::write_gauge(int gauge, double val) {}
+bool Gpio::read_key_switch() {}
+double Gpio::read_battery() {}
