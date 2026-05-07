@@ -1,6 +1,30 @@
 # BennyBotCode
 Arduino software to operate components for both Benny Bots as a part of an engineering capstone project 
 
+# Arduino Setup
+## Library Installation
+We use a few libraries available for install through the library manager tab of the Arduino IDE.
+Install the following libraries:
+- Bluepad32 for NINA-W10 boards by Ricardo Quesada
+- SD by Arduino, SparkFun
+
+## Custom Board Managers
+The Bluepad32 library requires a special ESP32 board manager, separate from
+the one from Espressif, in order to properly control the Bluetooth.
+
+First, go to file -> preferences, and paste the following under *Additional boards manager URLs*:
+```
+https://espressif.github.io/arduino-esp32/package_esp32_index.json
+https://raw.githubusercontent.com/ricardoquesada/esp32-arduino-lib-builder/master/bluepad32_files/package_esp32_bluepad32_index.json
+```
+
+Then, find the board manager tab on the left, search for *ESP32*, and install the following:
+- esp32 by Espressif Systems
+- esp32_bluepad32 by Ricardo Quesada
+
+Next, navigate to Tools -> Board -> esp32_bluepad32 and select ESP32-S3-USB-OTG.
+(We should confirm that this board doesn't break anything else and more fitting board like ESP32S3 Dev Module doesn't work)
+
 # Needs to handle
 ## Inputs
 - Controller
