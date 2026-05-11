@@ -5,7 +5,7 @@
 #define CONTROL_PERIOD 100 // ms
 
 Config::Config() {}
-void Config::read(Filesystem &fs) {}
+void Config::read() {}
 Bot Config::get_bot() {}
 int Config::get_key_period() {return KEY_PERIOD;}
 int Config::get_bat_period() {return BAT_PERIOD;}

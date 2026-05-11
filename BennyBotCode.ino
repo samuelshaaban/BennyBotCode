@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "filesystem.h"
+#include "util.h"
 #include "config.h"
 #include "controllerinterface.h"
 #include "motors.h"
@@ -8,7 +8,6 @@
 #include "antitheft.h"
 #include "media.h"
 
-Filesystem fs; // probably only used through references stored at setup of media
 Config config;
 
 ControllerInterface controller(XBOX_ONE);
@@ -25,15 +24,15 @@ unsigned long now, last_key, last_bat, last_control;
 void setup() {
   Serial.begin(115200);
 
-  fs.setup();
-  config.read(fs);
+  fs_setup();
+  config.read();
 
   controller.setup();
   motors.setup(config);
   servos.setup(config);
 
   gpio.setup(config);
-  media.setup(config, fs);
+  media.setup(config);
   antitheft.setup(config);
 
   now = last_key = last_bat = last_control = millis();

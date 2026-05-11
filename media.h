@@ -5,7 +5,7 @@
 class Media {
   public:
   Media();
-  void setup(Config&, Filesystem&);
+  void setup(Config&);
   void send_keys(Keys&); // not completely sure how these should be interpreted yet
 
   void trigger_alarm();

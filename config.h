@@ -1,5 +1,4 @@
 #pragma once
-#include "filesystem.h"
 
 enum Bot {A, B};
 
@@ -8,7 +7,7 @@ enum Bot {A, B};
 class Config {
   public:
   Config();
-  void read(Filesystem&);
+  void read();
 
   Bot get_bot();
 
