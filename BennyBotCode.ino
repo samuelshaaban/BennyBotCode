@@ -123,7 +123,7 @@ void setup() {
   antitheft.setup(config);
 
   now = last_key = last_bat = last_control = millis();
-  Serial.println("Setup complete")
+  Serial.println("Setup complete");
 }
 
 
@@ -131,7 +131,9 @@ void loop() {
   now = millis();
 
   if (now > last_key + config.get_key_period()) {
+    last_key = now;
     Serial.println("Checking key");
+
     while (!gpio.read_key_switch()) {
       Serial.println("Antitheft system armed");
       // sleep, wake up occasionally to check lidar
@@ -142,7 +144,9 @@ void loop() {
   }
 
   if (now > last_bat + config.get_bat_period()) {
+    last_bat = now;
     Serial.println("Checking battery");
+    
     // read battery, pass to controller class for rumble spacing
     // as battery nears min, decrease rumble spacing
     // constant rumble just before powering system down
@@ -159,6 +163,7 @@ void loop() {
   }
 
   if (now > last_control + config.get_control_period()) {
+    last_control = now;
     Serial.println("Checking controller");
     
     /*
@@ -171,5 +176,4 @@ void loop() {
     bool dataUpdated = BP32.update();
     if (dataUpdated) processControllers();
   }
-
 }
