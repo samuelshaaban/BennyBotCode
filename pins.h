@@ -31,8 +31,9 @@ struct pins {
     lidar_sda = 3,
     lidar_scl = 46,
 
-    gauge1 = 20,
-    gauge2 = 19,
+    // these are wired to the USB port on PCB v2, need to run jumpers to unused display pins
+    gauge1 = 0,
+    gauge2 = 35,
 
     dac_wsel = 7,
     dac_din = 16,

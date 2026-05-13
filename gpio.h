@@ -4,8 +4,7 @@
 // holds key and battery monitor and gauges
 class Gpio {
   public:
-  Gpio();
-  void setup(Config&);
+  void setup();
   
   void write_gauge(int, double);
   bool read_key_switch();

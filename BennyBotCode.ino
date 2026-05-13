@@ -118,7 +118,7 @@ void setup() {
   motors.setup(config);
   servos.setup(config);
 
-  gpio.setup(config);
+  gpio.setup();
   media.setup(config);
   antitheft.setup(config);
 
@@ -134,8 +134,11 @@ void loop() {
     last_key = now;
     Serial.println("Checking key");
 
-    while (!gpio.read_key_switch()) {
+    //while (!gpio.read_key_switch()) {
+    while(false) { // disable antitheft until hardware is connected
       Serial.println("Antitheft system armed");
+      delay(1000);
+
       // sleep, wake up occasionally to check lidar
       // not sure what the best way to sleep is, loop is inefficient, light sleep will drop bluetooth though
       if (antitheft.theft_detected()) media.trigger_alarm();
@@ -152,6 +155,7 @@ void loop() {
     // constant rumble just before powering system down
 
     double bat = gpio.read_battery();
+    Serial.printf("Battery voltage: %f\n", bat);
     //controller.set_battery(bat);
 
     if (bat < config.get_min_bat()) {
