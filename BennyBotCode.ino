@@ -104,8 +104,8 @@ void processControllers() {
 void setup() {
   Serial.begin(115200);
 
-  //fs_setup();
-  //config.read();
+  fs_setup();
+  config.read();
 
   //controller.setup();
   Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
@@ -113,12 +113,12 @@ void setup() {
   Serial.printf("BD Addr: %2X:%2X:%2X:%2X:%2X:%2X\n", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
   BP32.setup(&onConnectedController, &onDisconnectedController); // Setup the Bluepad32 callbacks
 
-  //motors.setup(config);
-  //servos.setup(config);
+  motors.setup(config);
+  servos.setup(config);
 
-  //gpio.setup(config);
-  //media.setup(config);
-  //antitheft.setup(config);
+  gpio.setup(config);
+  media.setup(config);
+  antitheft.setup(config);
 
   now = last_key = last_bat = last_control = millis();
 }
@@ -134,16 +134,16 @@ void loop() {
   delay(150);
   
 
-  /*if (now > last_key + config.get_key_period()) {
+  if (now > last_key + config.get_key_period()) {
     while (!gpio.read_key_switch()) {
       // sleep, wake up occasionally to check lidar
       // not sure what the best way to sleep is, loop is inefficient, light sleep will drop bluetooth though
       if (antitheft.theft_detected()) media.trigger_alarm();
     }  // key turned back on
     media.reset_alarm();
-  }*/
+  }
 
-  /*if (now > last_bat + config.get_bat_period()) {
+  if (now > last_bat + config.get_bat_period()) {
     // read battery, pass to controller class for rumble spacing
     // as battery nears min, decrease rumble spacing
     // constant rumble just before powering system down
@@ -156,12 +156,15 @@ void loop() {
       // we don't have a shutdown switch or way to shut off ESP32
       // best to turn off all peripherals, enter deep sleep
     }
-  }*/
+  }
 
-  /*if (now > last_control + config.get_control_period()) {
+  if (now > last_control + config.get_control_period()) {
+    /*
     Keys keys = controller.read();
     motors.send_keys(keys);
     servos.send_keys(keys);
     media.send_keys(keys);
-  }*/
+    */
+  }
+
 }
