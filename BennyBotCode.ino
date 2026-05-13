@@ -123,21 +123,17 @@ void setup() {
   antitheft.setup(config);
 
   now = last_key = last_bat = last_control = millis();
+  Serial.println("Setup complete")
 }
 
 
 void loop() {
   now = millis();
 
-  Serial.println("DEBUG - Haven't crashed yet!");
-  bool dataUpdated = BP32.update();
-  if (dataUpdated)
-    processControllers();
-  delay(150);
-  
-
   if (now > last_key + config.get_key_period()) {
+    Serial.println("Checking key");
     while (!gpio.read_key_switch()) {
+      Serial.println("Antitheft system armed");
       // sleep, wake up occasionally to check lidar
       // not sure what the best way to sleep is, loop is inefficient, light sleep will drop bluetooth though
       if (antitheft.theft_detected()) media.trigger_alarm();
@@ -146,6 +142,7 @@ void loop() {
   }
 
   if (now > last_bat + config.get_bat_period()) {
+    Serial.println("Checking battery");
     // read battery, pass to controller class for rumble spacing
     // as battery nears min, decrease rumble spacing
     // constant rumble just before powering system down
@@ -154,6 +151,7 @@ void loop() {
     //controller.set_battery(bat);
 
     if (bat < config.get_min_bat()) {
+      Serial.println("Battery below minimum");
       // shutdown
       // we don't have a shutdown switch or way to shut off ESP32
       // best to turn off all peripherals, enter deep sleep
@@ -161,12 +159,17 @@ void loop() {
   }
 
   if (now > last_control + config.get_control_period()) {
+    Serial.println("Checking controller");
+    
     /*
     Keys keys = controller.read();
     motors.send_keys(keys);
     servos.send_keys(keys);
     media.send_keys(keys);
     */
+
+    bool dataUpdated = BP32.update();
+    if (dataUpdated) processControllers();
   }
 
 }
