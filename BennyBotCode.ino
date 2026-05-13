@@ -103,6 +103,8 @@ void processControllers() {
 
 void setup() {
   Serial.begin(115200);
+  while(!Serial);
+  Serial.println("Begin!");
 
   fs_setup();
   config.read();

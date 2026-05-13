@@ -1,10 +1,31 @@
 #include "util.h"
+#include "pins.h"
 #include <Arduino.h>
-#include "SD.h"
+#include <SD.h>
 #include <SPI.h>
 
+void print_config() {
+  Serial.println("Reading config file:");
+  File f = fs_open("/config");
+  if(!f) {
+    Serial.println("Failed to open /config");
+    return;
+  }
+
+  while(f.available()) Serial.write(f.read());
+  f.close();
+  Serial.println();
+}
+
 void fs_setup() {
-  if(!SD.begin()) {
+  pinMode(pins::sd_det, INPUT_PULLUP);
+  if(digitalRead(pins::sd_det)) { // low means card attached
+    Serial.println("No SD Card detected");
+    return;
+  }
+  
+  SPI.begin(pins::sd_sclk, pins::sd_miso, pins::sd_mosi, pins::sd_cs);
+  if(!SD.begin(pins::sd_cs, SPI, 1000000)) {
     Serial.println("Card Mount Failed");
     return;
   }
@@ -16,6 +37,7 @@ void fs_setup() {
   }
 
   Serial.println("SD Card attached successfuly, Size: " + String(SD.cardSize() >> 20));
+  print_config();
 }
 
 File fs_open(const char *name) {
