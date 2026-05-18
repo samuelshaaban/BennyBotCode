@@ -16,7 +16,7 @@ void Gpio::write_gauge(int gauge, double val) {
   int d = val / 10 * (1<<12); // scale 10V to 12 bit DAC
   if(gauge == 1)      analogWrite(pins::gauge1, d);
   else if(gauge == 2) analogWrite(pins::gauge2, d);
-  else printf("Gpio::write_gauge: invalid gauge number: %d, ignoring\n", gauge);
+  else Serial.printf("Gpio::write_gauge: invalid gauge number: %d, ignoring\n", gauge);
 }
 
 bool Gpio::read_key_switch() { return !digitalRead(pins::key); } // on = gnd, inverted output

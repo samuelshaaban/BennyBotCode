@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Bluepad32.h>
+#include <L298N.h> // install 'L298N' library by Andrea Lombardo
 #include "util.h"
 #include "config.h"
 #include "controllerinterface.h"
@@ -8,6 +9,7 @@
 #include "gpio.h"
 #include "antitheft.h"
 #include "media.h"
+#include "pins.h" // possibly remove this once everything's in classes
 
 Config config;
 
@@ -22,6 +24,14 @@ Media media;
 //USB usb
 
 unsigned long now, last_key, last_bat, last_control;
+
+// this is sloppy temporary code,
+// replace with pins.motor1, pins.motor2
+// (they have same value)
+const unsigned int IN1 = 48;
+const unsigned int IN2 = 47;
+// Create one motor instance (this should go in a class)
+L298N motor(IN1, IN2);
 
 
 // START  copied code from controller arduino sketch
@@ -52,7 +62,7 @@ void onDisconnectedController(ControllerPtr ctl) {
 void dumpGamepad(ControllerPtr ctl) {
     Serial.printf(
         "idx=%d, dpad: 0x%02x, buttons: 0x%04x, axis L: %4d, %4d, axis R: %4d, %4d, brake: %4d, throttle: %4d, "
-        "misc: 0x%02x, gyro x:%6d y:%6d z:%6d, accel x:%6d y:%6d z:%6d\n",
+        "misc: 0x%02x\n",
         ctl->index(),        // Controller Index
         ctl->dpad(),         // D-pad
         ctl->buttons(),      // bitmask of pressed buttons
@@ -62,13 +72,7 @@ void dumpGamepad(ControllerPtr ctl) {
         ctl->axisRY(),       // (-511 - 512) right Y axis
         ctl->brake(),        // (0 - 1023): brake button
         ctl->throttle(),     // (0 - 1023): throttle (AKA gas) button
-        ctl->miscButtons(),  // bitmask of pressed "misc" buttons
-        ctl->gyroX(),        // Gyro X
-        ctl->gyroY(),        // Gyro Y
-        ctl->gyroZ(),        // Gyro Z
-        ctl->accelX(),       // Accelerometer X
-        ctl->accelY(),       // Accelerometer Y
-        ctl->accelZ()        // Accelerometer Z
+        ctl->miscButtons()  // bitmask of pressed "misc" buttons
     );
 }
 void processGamepad(ControllerPtr ctl) {
@@ -93,6 +97,7 @@ void processControllers() {
         // M: check only controllers that are connected and have new data
     if (myController && myController->isConnected() && myController->hasData()) {
         if (myController->isGamepad()) {
+            Serial.println("Calling 'processGamepad();'");
             processGamepad(myController);
         } else {
             Serial.println("Unsupported controller");
@@ -106,12 +111,18 @@ void setup() {
   while(!Serial);
   Serial.println("Begin!");
 
+  // this is for troubleshooting the two threads/cores
+  // https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
+  Serial.print("setup() running on core ");
+  Serial.println(xPortGetCoreID());
+
   fs_setup();
   config.read();
 
   //controller.setup();
   Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
   const uint8_t* addr = BP32.localBdAddress();
+  BP32.forgetBluetoothKeys();
   Serial.printf("BD Addr: %2X:%2X:%2X:%2X:%2X:%2X\n", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
   BP32.setup(&onConnectedController, &onDisconnectedController); // Setup the Bluepad32 callbacks
 
@@ -123,11 +134,33 @@ void setup() {
   antitheft.setup(config);
 
   now = last_key = last_bat = last_control = millis();
+
+  Serial.println("Please press a button on the controller");
+  bool dataUpdated = BP32.update();
+  Serial.print("Updated Controller Data, dataUpdated = ");
+  Serial.println(dataUpdated);
+  while (!dataUpdated){
+    // blocking loop until controller is connected
+    // my guess it that deferencing the null controller pointer causes crashes
+    // when a controller isn't immediately conneted.
+    Serial.println("Controller not connected. Waiting for controller.");
+    dataUpdated = BP32.update();
+    Serial.print("Updated Controller Data, dataUpdated = ");
+    Serial.println(dataUpdated);
+    sleep(1);
+  }
+
   Serial.println("Setup complete");
 }
 
 
 void loop() {
+
+  // debugging code, recommend commenting out
+  //Serial.print("loop() running on core ");
+  //Serial.println(xPortGetCoreID());
+
+
   now = millis();
 
   if (now > last_key + config.get_key_period()) {
@@ -178,6 +211,20 @@ void loop() {
     */
 
     bool dataUpdated = BP32.update();
-    if (dataUpdated) processControllers();
+    Serial.print("Updated Controller Data, dataUpdated = ");
+    Serial.println(dataUpdated);
+    if (dataUpdated) {
+      processControllers();
+    }
+    
+    int l_stick_y = myController->axisY();
+    if( l_stick_y > 10 /*account for stick drift*/) {
+      motor.forward();
+    } else if (l_stick_y < -10) {
+      motor.backward();
+    } else {
+      motor.stop();
+    }
+
   }
 }
